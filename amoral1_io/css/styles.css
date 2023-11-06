@@ -10883,6 +10883,7 @@ p.lead {
 @media (min-width: 992px) {
   #sideNav {
     padding-left: 0;
+    background-color: #000000;
     padding-right: 0;
     text-align: center;
     position: fixed;
