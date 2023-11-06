@@ -3615,6 +3615,7 @@ textarea.form-control-lg {
   --bs-nav-link-disabled-color: #6c757d;
   display: flex;
   flex-wrap: wrap;
+  background-color: #000000;
   padding-left: 0;
   margin-bottom: 0;
   list-style: none;
