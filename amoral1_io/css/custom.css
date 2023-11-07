@@ -1,0 +1,8 @@
+.nav .navbar-expand-lg .navbar-dark .bg-primary .fixed-top .-bg-primary .pagination .btn-close .btn
+{ background-color: #bdddf4;
+ color: #bdddf4;
+}
+
+:root {
+  --bs-primary-rgb: 189, 221, 244
+}
