@@ -410,7 +410,7 @@ library(lubridate)</code></pre>
 </div>
 <div id="process-data-cleaning-formatting" class="section level3">
 <h3>Process: Data cleaning &amp; formatting</h3>
-<pre class="r"><code>fitbitdaily&lt;- read.csv(file = &quot;/Users/Anais/Downloads/04_2016fitbitspring/dailyActivity_merged.csv&quot;)
+<pre class="r"><code>fitbitdaily&lt;- read.csv(file = &quot;dailyActivity_merged.csv&quot;)
 colnames(fitbitdaily)</code></pre>
 <pre><code>##  [1] &quot;Id&quot;                       &quot;ActivityDate&quot;            
 ##  [3] &quot;TotalSteps&quot;               &quot;TotalDistance&quot;           
@@ -493,7 +493,7 @@ much the most active person per day of the week had exhibited a
 quantifiable intensity rate, or activity.</p>
 <p>Note: The “TotalIntensity” values have been multiplied by the nearest
 100.</p>
-<pre class="r"><code>dsteps&lt;- read.csv(file = &quot;/Users/Anais/Downloads/04_2016fitbitspring/dailySteps_merged.csv&quot;)
+<pre class="r"><code>dsteps&lt;- read.csv(file = &quot;/dailySteps_merged.csv&quot;)
 unique(dsteps$Id)</code></pre>
 <pre><code>##  [1] 1503960366 1624580081 1644430081 1844505072 1927972279 2022484408
 ##  [7] 2026352035 2320127002 2347167796 2873212765 3372868164 3977333714
