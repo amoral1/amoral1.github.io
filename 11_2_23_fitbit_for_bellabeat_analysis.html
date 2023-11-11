@@ -410,7 +410,7 @@ library(lubridate)</code></pre>
 </div>
 <div id="process-data-cleaning-formatting" class="section level3">
 <h3>Process: Data cleaning &amp; formatting</h3>
-<pre class="r"><code>fitbitdaily&lt;- read.csv(file = &quot;dailyActivity_merged.csv&quot;)
+<pre class="r"><code>fitbitdaily&lt;- read.csv(file = &quot;/Users/Anais/Downloads/04_2016fitbitspring/dailyActivity_merged.csv&quot;)
 colnames(fitbitdaily)</code></pre>
 <pre><code>##  [1] &quot;Id&quot;                       &quot;ActivityDate&quot;            
 ##  [3] &quot;TotalSteps&quot;               &quot;TotalDistance&quot;           
@@ -493,7 +493,7 @@ much the most active person per day of the week had exhibited a
 quantifiable intensity rate, or activity.</p>
 <p>Note: The “TotalIntensity” values have been multiplied by the nearest
 100.</p>
-<pre class="r"><code>dsteps&lt;- read.csv(file = &quot;/dailySteps_merged.csv&quot;)
+<pre class="r"><code>dsteps&lt;- read.csv(file = &quot;/Users/Anais/Downloads/04_2016fitbitspring/dailySteps_merged.csv&quot;)
 unique(dsteps$Id)</code></pre>
 <pre><code>##  [1] 1503960366 1624580081 1644430081 1844505072 1927972279 2022484408
 ##  [7] 2026352035 2320127002 2347167796 2873212765 3372868164 3977333714
@@ -526,9 +526,16 @@ participation was logged, it would be appropriate to take into account
 of the margin of error increase, when it comes to the midpoint of the
 trial, which would likely effect the integrity of the data. Upon
 calculation, the month of May user (activity) data contains a margin of
-error of with the drop off at least 3 users at that point, whereas April
-started with a ~17% margin of error. There is also no demographic data,
-which doesn’t exclude any potential sample biases.</p>
+error of ~18% with the drop off at least 3 users at that point, whereas
+April started with a 17.06% margin of error. Therefore, the integrity of
+the data as being representative of total 23 mil users of Fitbit in
+2016, is strained and so not accurately represented here and the sample
+of 33-31 users should be used to mostly stand alone as individuals using
+a fitness app and wearable, and not Fitbit per se (there would need to
+be a larger pool of a sample size to drop margin of error down). There
+is also no demographic data in the datasets which doesn’t exclude any
+potential sample biases in the possible research to be done, or that is
+exhibited here.</p>
 </div>
 <div id="takeaways-recommendations" class="section level3">
 <h3>Takeaways &amp; recommendations</h3>
