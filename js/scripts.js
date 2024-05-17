@@ -32,3 +32,46 @@ window.addEventListener('DOMContentLoaded', event => {
     });
 
 });
+
+const projects = [
+    {
+        title: "Project 1",
+        description: "Description of Project 1"
+    },
+    {
+        title: "Project 2",
+        description: "Description of Project 2"
+    }
+];
+
+// Function to create dropdown items for projects
+function createDropdownItems() {
+    const dropdown = document.getElementById("dataDropdown");
+    projects.forEach(project => {
+        const listItem = document.createElement("li");
+        listItem.innerHTML = `<h4>${project.title}</h4><p>${project.description}</p>`;
+        dropdown.appendChild(listItem);
+    });
+}
+
+// Toggle dropdown visibility
+function toggleDropdown() {
+    const dropdown = document.getElementById("dataDropdown");
+    dropdown.classList.toggle("show");
+}
+
+// Event listener for clicking on the "Data" link to toggle dropdown
+document.querySelector("#projects h3 a").addEventListener("click", toggleDropdown);
+
+// Event listener to close dropdown when clicking outside
+window.addEventListener("click", function(event) {
+    const dropdown = document.getElementById("dataDropdown");
+    if (!event.target.matches("#projects h3 a")) {
+        if (dropdown.classList.contains("show")) {
+            dropdown.classList.remove("show");
+        }
+    }
+});
+
+// Initialize dropdown items
+createDropdownItems();
