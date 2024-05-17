@@ -33,6 +33,7 @@ window.addEventListener('DOMContentLoaded', event => {
 
 });
 
+// Define projects for the dropdown
 const projects = [
     {
         title: "Project 1",
@@ -75,3 +76,6 @@ window.addEventListener("click", function(event) {
 
 // Initialize dropdown items
 createDropdownItems();
+
+// Hide dropdown contents initially
+document.getElementById("dataDropdown").classList.remove("show");
