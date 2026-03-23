@@ -1,0 +1,107 @@
+<p>Using AWS's AI image service, Rekognition, and IAM access keys I was able to get technically accurate information back from terminal command line along with image labels.</p>
+
+<!-- ============================================================
+     IMAGE: Add your Rekognition terminal output screenshot here
+     Example: <img src="../assets/img/rekognition-terminal.png" alt="Rekognition terminal output showing detected labels" />
+     ============================================================ -->
+
+<h2>Technologies Used</h2>
+<ul>
+    <li>AWS Rekognition</li>
+    <li>AWS IAM</li>
+    <li>S3 Bucket</li>
+    <li>Python</li>
+</ul>
+
+<h2>S3 and Access Keys</h2>
+<p>Uploading the image(s) into an Amazon S3 bucket, which will be the source for analyzing and generating labels by Amazon Rekognition. The AWS Command Line Interface will be used for interacting with the AWS Services. IAM roles and granted access keys are used to provide user authentication and access to the Amazon CLI on a local system through terminal.</p>
+
+<!-- ============================================================
+     IMAGE: Add your S3 bucket screenshot here if you have one
+     Example: <img src="../assets/img/rekognition-s3-bucket.png" alt="S3 bucket setup" />
+     ============================================================ -->
+
+<pre><code>#!/usr/bin/env python3.11
+
+import boto3
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+from PIL import Image
+from io import BytesIO
+
+def detect_labels(photo, bucket):
+    client = boto3.client('rekognition')
+
+    response = client.detect_labels(
+        Image={'S3Object': {'Bucket':'', 'Name':''}},  ## Name of Bucket and Image file
+        MaxLabels=10)
+
+    print('Detected labels for ' + photo)
+    print()
+
+    for label in response['Labels']:
+        print("Label:", label['Name'])
+        print("Confidence:", label['Confidence'])
+        print()
+
+    # Load the image from S3
+    s3 = boto3.resource('s3')
+    obj = s3.Object(bucket, photo)
+    img_data = obj.get()['Body'].read()
+    img = Image.open(BytesIO(img_data))
+
+    plt.imshow(img)
+    ax = plt.gca()
+
+    # Plot bounding boxes
+    for label in response['Labels']:
+        for instance in label.get('Instances', []):
+            bbox = instance['BoundingBox']
+            left   = bbox['Left']   * img.width
+            top    = bbox['Top']    * img.height
+            width  = bbox['Width']  * img.width
+            height = bbox['Height'] * img.height
+
+            rect = patches.Rectangle(
+                (left, top), width, height,
+                linewidth=1, edgecolor='r', facecolor='none'
+            )
+            ax.add_patch(rect)
+
+            label_text = label['Name'] + ' (' + str(round(label['Confidence'], 2)) + '%)'
+            plt.text(left, top - 2, label_text, color='r', fontsize=8,
+                     bbox=dict(facecolor='white', alpha=0.7))
+
+    plt.axis('off')
+    plt.show()
+    return len(response['Labels'])
+
+def main():
+    photo  = ''
+    bucket = ''
+    label_count = detect_labels(photo, bucket)
+    print("Labels detected:", label_count)
+
+if __name__ == "__main__":
+    main()</code></pre>
+
+<p>The Python script consists of the programming logic for extracting the image from S3 and running the detect labels operation from Rekognition. It generates a pop-up window displaying the image with bounding boxes drawn around each detected label, as in the cover photo.</p>
+
+<!-- ============================================================
+     IMAGE: Add your "Blunted Heels" shoe photo with bounding boxes here — this is the cover image referenced in your LinkedIn post
+     Example: <img src="../assets/img/blunted-heels-bounding-box.png" alt="Blunted Heels with Rekognition bounding boxes" />
+     ============================================================ -->
+
+<h2>Reflections &amp; Analysis</h2>
+
+<!-- ============================================================
+     IMAGE: Add the accuracy/terminal screenshot ("Accuracy rated image analysis in the terminal") here
+     Example: <img src="../assets/img/rekognition-accuracy.png" alt="Accuracy rated image analysis in terminal" />
+     ============================================================ -->
+
+<p>I was taken aback by the findings from the experimentation, which claimed the artisanal avant-garde design had a confidence level of 73.89% of being classified as art. With my background in art, I have been exposed to arguments like <em>what constitutes art?</em> and <em>what are the limitations of design in the context of art?</em> before. Because I self-manufactured and designed the shoes from scratch, I would agree that to a certain extent they are "Art" — if not by the simple basis that the wearer would have to be wholly subject to the shoes and not the other way around (they are built to be unstable).</p>
+
+<p>This was interesting because the AI also picked up on the fact that they are sculptural and slightly removed from the world of functionality in design, which is integral to the design landscape.</p>
+
+<h2>Takeaways</h2>
+<p>I plan to continue this line of research, testing different images that blur the lines of concise definition — where the classification judgements called for in the script would be useful to help drive a conversation. I would then think about formalizing that data in an effort to gather insights about the AI image detection range and discover potential limitations with respect to picking up subtleties, in a future experiment.</p>

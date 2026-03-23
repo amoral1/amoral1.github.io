@@ -1,0 +1,97 @@
+<p>Using serverless cloud architecture (AWS Lambda) coupled with AWS's AI Text-To-Speech service, Polly, I was able to generate an audio file reciting a text piece in a matter of seconds.</p>
+
+<h2>Technologies Used</h2>
+<ul>
+    <li>AWS Lambda</li>
+    <li>AWS IAM</li>
+    <li>AWS S3</li>
+    <li>AWS Polly</li>
+    <li>Python 3.11</li>
+</ul>
+
+<h2>Text File, IAM Permissions, and S3 Bucket Setup</h2>
+
+<!-- ============================================================
+     IMAGE: Add your Baudelaire "Parfum Exotique" .txt file screenshot here
+     This is the "Charles Baudelaire Parfum Exotique .txt file input" image from your LinkedIn post
+     Example: <img src="../assets/img/tts-parfum-exotique-txt.png" alt="Parfum Exotique plaintext file" />
+     ============================================================ -->
+
+<p>To begin, I gathered my plaintext file — Charles Baudelaire's <em>Parfum Exotique</em> — to get started with my S3 Bucket (created for my region), which would act as the source for the Lambda function to deploy. I then went to IAM to create a role with the use case of "Lambda" and added permissions: <code>AmazonPollyReadOnlyAccess</code> and <code>AmazonS3FullAccess</code>.</p>
+
+<h2>Lambda Function</h2>
+<p>The Lambda function uses the Python 3.11 runtime. Under the "Change default execution role" tab I applied the IAM role I created. Below is the deployed script:</p>
+
+<pre><code>import json
+import boto3
+import datetime
+
+current_time = datetime.datetime.now()
+timestamp = current_time.strftime("%d%m%y")
+
+s3_client    = boto3.client('s3')
+polly_client = boto3.client('polly')
+
+def lambda_handler(event, context):
+    source_bucket    = str(event["Records"][0]['s3']['bucket']['name'])
+    source_file_key  = str(event["Records"][0]['s3']['object']['key'])
+    destination_bucket   = 'destination_bucket'  ## Update with your bucket name
+    destination_file_key = f"{timestamp}-audio.mp3"
+
+    # Fetch text from S3
+    try:
+        response = s3_client.get_object(Bucket=source_bucket, Key=source_file_key)
+        text = response['Body'].read().decode('utf-8')
+    except Exception as e:
+        return {'statusCode': 500, 'body': f'Error fetching text: {str(e)}'}
+
+    # Synthesize speech with Polly
+    try:
+        response   = polly_client.synthesize_speech(
+            OutputFormat='mp3',
+            Text=text,
+            VoiceId='Salli'  # One of many available voice IDs
+        )
+        audio_data = response['AudioStream'].read()
+    except Exception as e:
+        return {'statusCode': 500, 'body': f'Error with Polly: {str(e)}'}
+
+    # Upload MP3 to destination bucket
+    try:
+        s3_client.put_object(
+            Bucket=destination_bucket,
+            Key=destination_file_key,
+            Body=audio_data
+        )
+    except Exception as e:
+        return {'statusCode': 500, 'body': f'Error uploading MP3: {str(e)}'}
+
+    print("success")
+    return {
+        'statusCode': 200,
+        'body': f'Saved to s3://{destination_bucket}/{destination_file_key}'
+    }</code></pre>
+
+<p>The script processes the contents of the source bucket, passes the text through Polly to create a client object, and exports the result to a destination bucket. Note: update <code>destination_bucket</code> with your second bucket's name. By this point you will have two S3 buckets.</p>
+
+<h2>Triggering the Lambda</h2>
+
+<!-- ============================================================
+     IMAGE: Add your Lambda / S3 notification setup screenshot here
+     This is the "Scrolling to the bottom of..." screenshot from your LinkedIn post
+     Example: <img src="../assets/img/tts-lambda-trigger.png" alt="S3 event notification linking to Lambda function" />
+     ============================================================ -->
+
+<p>To link this Lambda function to the source bucket, click "Create Notifications" on the first S3 bucket, setting the destination to the <code>ttspeech</code> Lambda function name. This triggers processing automatically whenever a <code>.txt</code> file is uploaded. Saving the changes is the last step of this automated pipeline.</p>
+
+<h2>Result</h2>
+<p>Upon uploading the file to the source S3 bucket, I was greeted with Baudelaire's <em>Parfum Exotique</em> recited by Salli, waiting in the destination bucket as an <code>.mp3</code> file. <a href="http://anaismorales.com/parfumexotique_salli.mp3" target="_blank" rel="noopener">Listen to the output here.</a></p>
+
+<h2>Potential Applications</h2>
+<ul>
+    <li>TTS phone notifications while driving or when hands are occupied</li>
+    <li>Converting blog posts and long-form text into audio files</li>
+    <li>Accessibility tooling for content-heavy sites</li>
+</ul>
+
+<p>Through Lambda's serverless computing, I set up an automated pipeline deployed with Python using S3 as a client — filtering a text file into a newly generated <code>.mp3</code> file in a destination bucket, ready to download and share.</p>
