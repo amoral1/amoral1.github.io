@@ -16,5 +16,14 @@
     "readtime": "6 min read",
     "excerpt": "Using serverless cloud architecture (AWS Lambda) coupled with AWS Polly to generate an audio file reciting Baudelaire's Parfum Exotique in seconds.",
     "tags": ["AWS Lambda", "AWS Polly", "S3", "IAM", "Python", "TTS", "Serverless"]
-  }
+  } 
+{
+  "file": "post-mapillary-3dreconstruction.html",
+  "title": "Mapillary × MapAnything × VGGT-Long × Pi3 — Street-Level 3D Reconstruction",
+  "date": "June 2026",
+  "category": "Computer Vision / 3D Reconstruction",
+  "readtime": "8 min read",
+  "excerpt": "Comparing feed-forward transformer backbones for metric 3D reconstruction and Gaussian Splatting on Tokyo street-level drive sequences.",
+  "tags": ["3DGS", "Gaussian Splatting", "VGGT-Long", "Mapillary", "MLflow", "Nerfstudio", "Pi3"]
+}
 ]
