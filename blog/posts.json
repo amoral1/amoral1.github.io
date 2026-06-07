@@ -16,7 +16,7 @@
     "readtime": "6 min read",
     "excerpt": "Using serverless cloud architecture (AWS Lambda) coupled with AWS Polly to generate an audio file reciting Baudelaire's Parfum Exotique in seconds.",
     "tags": ["AWS Lambda", "AWS Polly", "S3", "IAM", "Python", "TTS", "Serverless"]
-  } 
+  }, 
 {
   "file": "post-mapillary-3dreconstruction.html",
   "title": "Mapillary × MapAnything × VGGT-Long × Pi3 — Street-Level 3D Reconstruction",
