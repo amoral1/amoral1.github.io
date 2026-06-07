@@ -6,3 +6,13 @@
 :root {
   --bs-primary-rgb: 189, 221, 244
 }
+
+.bg-primary,
+.btn-primary,
+.navbar.bg-primary {
+    background-color: #bdddf4 !important;
+    border-color: #bdddf4 !important;
+}
+
+a { color: #bdddf4; }
+a:hover { color: #8abcd8; }
