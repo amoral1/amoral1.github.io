@@ -1,18 +1,37 @@
-.nav .navbar-expand-lg .navbar-dark .bg-primary .fixed-top .-bg-primary .pagination .btn-close .btn
-{ background-color: #bdddf4;
- color: #bdddf4;
-}
-
+/* ── Force blue across all browsers including Safari ── */
 :root {
-  --bs-primary-rgb: 189, 221, 244
+    --bs-primary: #bdddf4;
+    --bs-primary-rgb: 189, 221, 244;
+    --bs-link-color: #bdddf4;
+    --bs-link-color-rgb: 189, 221, 244;
 }
 
-.bg-primary,
-.btn-primary,
-.navbar.bg-primary {
+/* Sidebar background */
+#sideNav {
     background-color: #bdddf4 !important;
-    border-color: #bdddf4 !important;
 }
 
-a { color: #bdddf4; }
-a:hover { color: #8abcd8; }
+/* Primary text colour — name, dates, subheadings */
+.text-primary,
+.text-primary span,
+h1 .text-primary,
+.subheading {
+    color: #2c6e9a !important;
+}
+
+/* Links */
+a {
+    color: #2c6e9a;
+}
+a:hover {
+    color: #1a4f72;
+}
+
+/* Nav links in sidebar */
+#sideNav .nav-link {
+    color: rgba(255, 255, 255, 0.75) !important;
+}
+#sideNav .nav-link:hover,
+#sideNav .nav-link.active {
+    color: #ffffff !important;
+}
