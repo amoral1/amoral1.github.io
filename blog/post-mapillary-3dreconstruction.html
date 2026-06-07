@@ -65,7 +65,7 @@
 <p>Raw GPS track from <code>computed_geometry</code> overlaid on the route. Used as ground truth for ATE/RPE evaluation.</p>
 <img src="../assets/img/gps_trajectory.png" alt="GPS trajectory" />
 
-<h2>Point Cloud — VGGT-Long / Pi3</h2>
+<h2>Point Cloud — VGGT-Long / Pi3 backbone</h2>
 <p>
   Dense colored point cloud reconstructed from the dense subset (frames [0:100:1], single chunk).
   Confidence-filtered at threshold 0.05 for Pi3, ~0.5 for VGGT-Long.
@@ -74,27 +74,18 @@
 
 <!-- ▼▼▼ Point cloud viewer — upload your PLY and paste the public URL below ▼▼▼ -->
 <iframe
-  src="../viewers/pointcloud-viewer.html?ply=https://your-site.com/assets/splats/pointcloud.ply&label=VGGT-Long%20%2F%20Pi3%20Point%20Cloud"
+  src="https://www.anaismorales.com/vggt_long_pointcloud_viewer.html"
   width="100%"
-  height="520"
-  style="border:none;border-radius:4px;margin:1rem 0 0.5rem;"
+  height="560"
+  style="border:none; border-radius:4px; margin:1rem 0;"
   loading="lazy"
-  title="Point Cloud Viewer">
+  title="VGGT-Long Point Cloud Viewer">
 </iframe>
 <p style="font-size:0.75rem;color:#868e96;margin-bottom:1.5rem;">
   Interactive — WebGL required. Best in Chrome or Firefox.
 </p>
 
-<h2>Gaussian Splat — Nerfstudio Splatfacto</h2>
-<p>
-  Trained 3D Gaussian Splat via <a href="https://docs.nerf.studio" target="_blank">Nerfstudio splatfacto</a>
-  (30,000 steps), initialized from the Pi3 COLMAP export. Densification grows the Gaussian count
-  from the seed point cloud. ~123 MB.
-</p>
-<p>
-  Forward-facing drive sequences produce some spike artifacts due to limited lateral baseline —
-  a loop sequence (camera returning to start) is the planned fix.
-</p>
+
 
 <!-- ▼▼▼ Splat viewer — upload your PLY and paste the public URL below ▼▼▼ -->
 <iframe

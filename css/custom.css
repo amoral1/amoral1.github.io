@@ -1,4 +1,4 @@
-/* ── Force blue across all browsers including Safari ── */
+/* ── Bootstrap primary → site blue, all browsers incl. Safari ── */
 :root {
     --bs-primary: #bdddf4;
     --bs-primary-rgb: 189, 221, 244;
@@ -6,32 +6,31 @@
     --bs-link-color-rgb: 189, 221, 244;
 }
 
-/* Sidebar background */
+/* Sidebar */
 #sideNav {
     background-color: #bdddf4 !important;
 }
 
-/* Primary text colour — name, dates, subheadings */
-.text-primary,
-.text-primary span,
-h1 .text-primary,
-.subheading {
-    color: #2c6e9a !important;
+/* Primary text (dates, name accent) */
+.text-primary {
+    color: #bdddf4 !important;
 }
 
-/* Links */
-a {
-    color: #2c6e9a;
-}
-a:hover {
-    color: #1a4f72;
-}
-
-/* Nav links in sidebar */
+/* Nav links */
 #sideNav .nav-link {
     color: rgba(255, 255, 255, 0.75) !important;
+    font-weight: 800 !important;
 }
 #sideNav .nav-link:hover,
 #sideNav .nav-link.active {
     color: #ffffff !important;
+}
+
+/* Global links */
+a {
+    color: #bdddf4;
+    font-weight: 800;
+}
+a:hover {
+    color: #8abcd8;
 }
