@@ -1,0 +1,231 @@
+<!-- ============================================================
+     Mapillary Drive Reconstruction — post content fragment
+     Loaded by post.html via fetch() + innerHTML injection.
+     Scripts do NOT run via innerHTML — all interactive viewers
+     are <iframe> tags pointing to /viewers/*.html?ply=URL
+
+     TO UPDATE A VIEWER: change the ?ply= URL in the iframe src.
+     Upload your new PLY to your server and paste the public URL.
+     ============================================================ -->
+
+<h2>Overview</h2>
+<p>
+  A research pipeline for metric 3D reconstruction, trajectory evaluation, and Gaussian Splatting
+  from Mapillary street-level imagery — comparing feed-forward transformer backbones on sequential
+  Tokyo drive sequences. All runs tracked via <a href="https://dagshub.com/anaismorales/vggt-long" target="_blank">MLflow on DagsHub</a>.
+</p>
+
+<p>
+  Study area: two driving sequences through <strong>Tokyo, Japan</strong> — ~870 raw Mapillary frames per sequence,
+  sampled at stride 5 (~174 inference frames) or stride 1 (100-frame dense subsets).
+</p>
+
+<!-- Pipeline diagram -->
+<pre>Mapillary API ──► Backbone Inference ──► COLMAP Export ──► Nerfstudio Splatfacto
+  (GPS poses)      MapAnything /            cameras.txt        trained 3DGS
+                   VGGT-Long / Pi3          images.txt         ~123 MB PLY
+                   metric 3D, no SfM        points3D.txt
+                        │
+                        └──► Trajectory Metrics (ATE / RPE / DTW)
+                             MLflow → DagsHub</pre>
+
+<h2>Models</h2>
+<table style="width:100%;border-collapse:collapse;font-family:'Muli',sans-serif;font-size:0.9rem;margin-bottom:1.5rem;">
+  <thead>
+    <tr style="border-bottom:2px solid #bdddf4;">
+      <th style="text-align:left;padding:0.5rem 0.75rem;">Backbone</th>
+      <th style="text-align:left;padding:0.5rem 0.75rem;">Strategy</th>
+      <th style="text-align:left;padding:0.5rem 0.75rem;">RPE mean</th>
+      <th style="text-align:left;padding:0.5rem 0.75rem;">Notes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="border-bottom:1px solid #2a2a3a;">
+      <td style="padding:0.5rem 0.75rem;"><strong>MapAnything</strong></td>
+      <td style="padding:0.5rem 0.75rem;">3-split, 5-frame overlap</td>
+      <td style="padding:0.5rem 0.75rem;">—</td>
+      <td style="padding:0.5rem 0.75rem;">Meta Apache 2.0. Strong baseline.</td>
+    </tr>
+    <tr style="border-bottom:1px solid #2a2a3a;">
+      <td style="padding:0.5rem 0.75rem;"><strong>VGGT-Long</strong></td>
+      <td style="padding:0.5rem 0.75rem;">Chunked SIM3 alignment</td>
+      <td style="padding:0.5rem 0.75rem;">2.46 m</td>
+      <td style="padding:0.5rem 0.75rem;">Loop closure via SALAD. scale_GPS=5.49×.</td>
+    </tr>
+    <tr>
+      <td style="padding:0.5rem 0.75rem;"><strong>Pi3</strong></td>
+      <td style="padding:0.5rem 0.75rem;">Single chunk preferred</td>
+      <td style="padding:0.5rem 0.75rem;">TBD</td>
+      <td style="padding:0.5rem 0.75rem;">HuggingFace yyfz233/Pi3. Conf maxes ~0.5 — use threshold 0.05.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>GPS Trajectory</h2>
+<p>Raw GPS track from <code>computed_geometry</code> overlaid on the route. Used as ground truth for ATE/RPE evaluation.</p>
+<img src="../assets/img/gps_trajectory.png" alt="GPS trajectory" />
+
+<h2>Point Cloud — VGGT-Long / Pi3</h2>
+<p>
+  Dense colored point cloud reconstructed from the dense subset (frames [0:100:1], single chunk).
+  Confidence-filtered at threshold 0.05 for Pi3, ~0.5 for VGGT-Long.
+  Drag to orbit · scroll to zoom.
+</p>
+
+<!-- ▼▼▼ Point cloud viewer — upload your PLY and paste the public URL below ▼▼▼ -->
+<iframe
+  src="../viewers/pointcloud-viewer.html?ply=https://your-site.com/assets/splats/pointcloud.ply&label=VGGT-Long%20%2F%20Pi3%20Point%20Cloud"
+  width="100%"
+  height="520"
+  style="border:none;border-radius:4px;margin:1rem 0 0.5rem;"
+  loading="lazy"
+  title="Point Cloud Viewer">
+</iframe>
+<p style="font-size:0.75rem;color:#868e96;margin-bottom:1.5rem;">
+  Interactive — WebGL required. Best in Chrome or Firefox.
+</p>
+
+<h2>Gaussian Splat — Nerfstudio Splatfacto</h2>
+<p>
+  Trained 3D Gaussian Splat via <a href="https://docs.nerf.studio" target="_blank">Nerfstudio splatfacto</a>
+  (30,000 steps), initialized from the Pi3 COLMAP export. Densification grows the Gaussian count
+  from the seed point cloud. ~123 MB.
+</p>
+<p>
+  Forward-facing drive sequences produce some spike artifacts due to limited lateral baseline —
+  a loop sequence (camera returning to start) is the planned fix.
+</p>
+
+<!-- ▼▼▼ Splat viewer — upload your PLY and paste the public URL below ▼▼▼ -->
+<iframe
+  src="../viewers/pointcloud-viewer.html?ply=https://your-site.com/assets/splats/splatfacto.ply&label=Splatfacto%20(Pi3%20init)"
+  width="100%"
+  height="520"
+  style="border:none;border-radius:4px;margin:1rem 0 0.5rem;"
+  loading="lazy"
+  title="Gaussian Splat Viewer">
+</iframe>
+<p style="font-size:0.75rem;color:#868e96;margin-bottom:1.5rem;">
+  Rendered as colored points from SH DC coefficients. Interactive — WebGL required.
+</p>
+
+<h2>MapAnything Splat</h2>
+<p>
+  Direct Gaussian export from MapAnything — kNN-adaptive scale, confidence-weighted opacity [120–255],
+  4M Gaussians subsampled from ~32.5M. ~128 MB. No training pass required.
+</p>
+
+<!-- ▼▼▼ MapAnything splat viewer — paste public URL below ▼▼▼ -->
+<iframe
+  src="../viewers/pointcloud-viewer.html?ply=https://your-site.com/assets/splats/mapanything_splatv2.ply&label=MapAnything%20splatv2"
+  width="100%"
+  height="520"
+  style="border:none;border-radius:4px;margin:1rem 0 0.5rem;"
+  loading="lazy"
+  title="MapAnything Splat Viewer">
+</iframe>
+
+<h2>Splat Comparison</h2>
+<table style="width:100%;border-collapse:collapse;font-family:'Muli',sans-serif;font-size:0.85rem;margin-bottom:1.5rem;">
+  <thead>
+    <tr style="border-bottom:2px solid #bdddf4;">
+      <th style="text-align:left;padding:0.5rem 0.75rem;"></th>
+      <th style="text-align:left;padding:0.5rem 0.75rem;">MapAnything splatv2</th>
+      <th style="text-align:left;padding:0.5rem 0.75rem;">VGGT-Long / Pi3 splatfacto</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="border-bottom:1px solid #2a2a3a;">
+      <td style="padding:0.4rem 0.75rem;color:#bdddf4;">Stride</td>
+      <td style="padding:0.4rem 0.75rem;">1 (~174 frames)</td>
+      <td style="padding:0.4rem 0.75rem;">1 (100-frame subset)</td>
+    </tr>
+    <tr style="border-bottom:1px solid #2a2a3a;">
+      <td style="padding:0.4rem 0.75rem;color:#bdddf4;">Scale</td>
+      <td style="padding:0.4rem 0.75rem;">kNN mean dist (4 neighbors)</td>
+      <td style="padding:0.4rem 0.75rem;">Trained (nerfstudio)</td>
+    </tr>
+    <tr style="border-bottom:1px solid #2a2a3a;">
+      <td style="padding:0.4rem 0.75rem;color:#bdddf4;">Gaussians</td>
+      <td style="padding:0.4rem 0.75rem;">4M</td>
+      <td style="padding:0.4rem 0.75rem;">Densified from seed pts</td>
+    </tr>
+    <tr style="border-bottom:1px solid #2a2a3a;">
+      <td style="padding:0.4rem 0.75rem;color:#bdddf4;">File size</td>
+      <td style="padding:0.4rem 0.75rem;">~128 MB</td>
+      <td style="padding:0.4rem 0.75rem;">~123 MB</td>
+    </tr>
+    <tr>
+      <td style="padding:0.4rem 0.75rem;color:#bdddf4;">Method</td>
+      <td style="padding:0.4rem 0.75rem;">Direct export</td>
+      <td style="padding:0.4rem 0.75rem;">Trained 3DGS (30k steps)</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Trajectory Metrics</h2>
+<table style="width:100%;border-collapse:collapse;font-family:'Muli',sans-serif;font-size:0.85rem;margin-bottom:1.5rem;">
+  <thead>
+    <tr style="border-bottom:2px solid #bdddf4;">
+      <th style="text-align:left;padding:0.5rem 0.75rem;">Metric</th>
+      <th style="text-align:left;padding:0.5rem 0.75rem;">Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="border-bottom:1px solid #2a2a3a;">
+      <td style="padding:0.4rem 0.75rem;color:#bdddf4;">ATE</td>
+      <td style="padding:0.4rem 0.75rem;">Absolute Trajectory Error — mean positional deviation over full sequence</td>
+    </tr>
+    <tr style="border-bottom:1px solid #2a2a3a;">
+      <td style="padding:0.4rem 0.75rem;color:#bdddf4;">RPE</td>
+      <td style="padding:0.4rem 0.75rem;">Relative Pose Error — mean frame-to-frame delta error</td>
+    </tr>
+    <tr style="border-bottom:1px solid #2a2a3a;">
+      <td style="padding:0.4rem 0.75rem;color:#bdddf4;">scale_GPS_vision</td>
+      <td style="padding:0.4rem 0.75rem;">Ratio of GPS-derived scale to model scale — 1.0 = perfect metric</td>
+    </tr>
+    <tr>
+      <td style="padding:0.4rem 0.75rem;color:#bdddf4;">DTW</td>
+      <td style="padding:0.4rem 0.75rem;">Dynamic Time Warping distance between predicted and GPS trajectory</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Key Technical Notes</h2>
+
+<h3>Pi3 Confidence Scale</h3>
+<p>
+  Pi3 confidence values max at ~0.5, not ~5 like VGGT-Long.
+  <code>CONF_THRESHOLD</code> must be set to <code>0.05</code> for Pi3 runs or the point cloud filters to near-empty.
+</p>
+
+<h3>COLMAP Camera Resolution</h3>
+<p>
+  <code>cameras.txt</code> must use actual image dimensions (518×392), not the model's internal output resolution (574×434 for Pi3).
+  Intrinsics are scaled proportionally: <code>fx_scaled = fx_model × (W_img / W_model)</code>.
+</p>
+
+<h3>Forward-Facing Sequence Limitation</h3>
+<p>
+  Forward-facing drive sequences (camera always pointing ahead) lack lateral baseline — the same point
+  is never seen from multiple angles, which limits both trajectory accuracy and splat quality.
+  The next experiment uses a Mapillary loop sequence (start/end within ~50m) to enable real multi-view
+  triangulation and SALAD loop closure.
+</p>
+
+<h3>Eval() String Bug — VGGT-Long</h3>
+<p>OmegaConf parses float config values; VGGT-Long calls <code>eval()</code> on them internally. Fix:</p>
+<pre>cfg.Model.IRLS.tol = str(IRLS_TOL)                   # "1e-9"
+cfg.Loop.SIM3_Optimizer.lambda_init = str(1e-6)       # "1e-06"</pre>
+
+<h2>References</h2>
+<ul>
+  <li><a href="https://github.com/facebookresearch/map-anything" target="_blank">MapAnything — Meta Research</a></li>
+  <li><a href="https://github.com/HengyiWang/VGGT-Long" target="_blank">VGGT-Long — HengyiWang</a></li>
+  <li><a href="https://huggingface.co/yyfz233/Pi3" target="_blank">Pi3 — yyfz233 (HuggingFace)</a></li>
+  <li><a href="https://github.com/msilaev/VGGT-Long-Gsplat" target="_blank">VGGT-Long-Gsplat — msilaev</a></li>
+  <li><a href="https://docs.nerf.studio" target="_blank">Nerfstudio splatfacto</a></li>
+  <li><a href="https://www.mapillary.com/developer/api-documentation" target="_blank">Mapillary API v4</a></li>
+  <li><a href="https://github.com/graphdeco-inria/gaussian-splatting" target="_blank">3D Gaussian Splatting — Kerbl et al.</a></li>
+  <li><a href="https://antimatter15.com/splat/" target="_blank">antimatter15 splat viewer</a></li>
+</ul>
